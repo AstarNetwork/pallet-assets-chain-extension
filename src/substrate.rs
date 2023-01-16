@@ -69,7 +69,7 @@ where
         // The contract should have money for the deposit
         Ok(pallet_assets::Pallet::<T>::create(
             self.origin(),
-            id,
+            id.into(),
             admin.into(),
             min_balance,
         )?)
@@ -77,12 +77,12 @@ where
 
     fn mint(&mut self, id: T::AssetId, who: T::AccountId, amount: T::Balance) -> Result<(), Error<T>> {
         // Only origin with `issuer` right can do mint
-        Ok(pallet_assets::Pallet::<T>::mint(self.origin(), id, who.into(), amount)?)
+        Ok(pallet_assets::Pallet::<T>::mint(self.origin(), id.into(), who.into(), amount)?)
     }
 
     fn burn(&mut self, id: T::AssetId, who: T::AccountId, amount: T::Balance) -> Result<(), Error<T>> {
         // Only origin with `admin` right can do burn
-        Ok(pallet_assets::Pallet::<T>::burn(self.origin(), id, who.into(), amount)?)
+        Ok(pallet_assets::Pallet::<T>::burn(self.origin(), id.into(), who.into(), amount)?)
     }
 
     fn balance_of(&self, id: T::AssetId, owner: T::AccountId) -> T::Balance {
@@ -106,7 +106,7 @@ where
     ) -> Result<(), Error<T>> {
         Ok(pallet_assets::Pallet::<T>::approve_transfer(
             self.select_origin(origin)?,
-            id,
+            id.into(),
             target.into(),
             amount,
         )?)
@@ -115,7 +115,7 @@ where
     fn cancel_approval(&mut self, origin: Origin, id: T::AssetId, target: T::AccountId) -> Result<(), Error<T>> {
         Ok(pallet_assets::Pallet::<T>::cancel_approval(
             self.select_origin(origin)?,
-            id,
+            id.into(),
             target.into(),
         )?)
     }
@@ -129,7 +129,7 @@ where
     ) -> Result<(), Error<T>> {
         Ok(pallet_assets::Pallet::<T>::transfer(
             self.select_origin(origin)?,
-            id,
+            id.into(),
             target.into(),
             amount,
         )?)
@@ -145,7 +145,7 @@ where
     ) -> Result<(), Error<T>> {
         Ok(pallet_assets::Pallet::<T>::transfer_approved(
             self.select_origin(origin)?,
-            id,
+            id.into(),
             owner.into(),
             target.into(),
             amount,
@@ -155,7 +155,7 @@ where
     fn set_metadata(&mut self, id: T::AssetId, name: Vec<u8>, symbol: Vec<u8>, decimals: u8) -> Result<(), Error<T>> {
         Ok(pallet_assets::Pallet::<T>::set_metadata(
             self.origin(),
-            id,
+            id.into(),
             name,
             symbol,
             decimals,
