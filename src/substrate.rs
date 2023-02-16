@@ -41,7 +41,6 @@ use obce::substrate::{
         chain_extension::Ext,
         Config as ContractConfig,
     },
-    sp_core::crypto::UncheckedFrom,
     sp_runtime::traits::StaticLookup,
     sp_std::vec::Vec,
     ExtensionContext,
@@ -63,7 +62,6 @@ where
     T: SysConfig + AssetConfig + ContractConfig,
     <<T as SysConfig>::Lookup as StaticLookup>::Source: From<<T as SysConfig>::AccountId>,
     E: Ext<T = T>,
-    <E::T as SysConfig>::AccountId: UncheckedFrom<<E::T as SysConfig>::Hash> + AsRef<[u8]>,
 {
     fn create(&mut self, id: T::AssetId, admin: T::AccountId, min_balance: T::Balance) -> Result<(), Error<T>> {
         // The contract should have money for the deposit
@@ -77,12 +75,22 @@ where
 
     fn mint(&mut self, id: T::AssetId, who: T::AccountId, amount: T::Balance) -> Result<(), Error<T>> {
         // Only origin with `issuer` right can do mint
-        Ok(pallet_assets::Pallet::<T>::mint(self.origin(), id.into(), who.into(), amount)?)
+        Ok(pallet_assets::Pallet::<T>::mint(
+            self.origin(),
+            id.into(),
+            who.into(),
+            amount,
+        )?)
     }
 
     fn burn(&mut self, id: T::AssetId, who: T::AccountId, amount: T::Balance) -> Result<(), Error<T>> {
         // Only origin with `admin` right can do burn
-        Ok(pallet_assets::Pallet::<T>::burn(self.origin(), id.into(), who.into(), amount)?)
+        Ok(pallet_assets::Pallet::<T>::burn(
+            self.origin(),
+            id.into(),
+            who.into(),
+            amount,
+        )?)
     }
 
     fn balance_of(&self, id: T::AssetId, owner: T::AccountId) -> T::Balance {
@@ -189,7 +197,6 @@ where
     T: SysConfig + AssetConfig + ContractConfig,
     <<T as SysConfig>::Lookup as StaticLookup>::Source: From<<T as SysConfig>::AccountId>,
     E: Ext<T = T>,
-    <E::T as SysConfig>::AccountId: UncheckedFrom<<E::T as SysConfig>::Hash> + AsRef<[u8]>,
 {
     fn origin(&mut self) -> T::RuntimeOrigin {
         RawOrigin::Signed(self.env.ext().address().clone()).into()
